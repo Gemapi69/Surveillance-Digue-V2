@@ -339,43 +339,42 @@
                 🌊 Site Vigicrues Officiel
             </a>
             
-            <a href="https://superviseur.paratronic.com/" target="_blank" class="btn btn-warning">
-                🔧 Superviseur Paratronic (gemapilyon/lyon)
-            </a>
+
         </div>
         
         <!-- 2. Itinéraires -->
         <div class="section">
             <h2>🗺️ Itinéraires Préétablis</h2>
-            <a href="https://www.google.com/maps/d/viewer?mid=1-HlcsxboWarOxhJ06qMahMBkjDOMQDU" class="btn" target="_blank">
-                📍 Itinéraire 1: Triangle → Eaux bleues
-            </a>
-            <a href="https://www.google.com/maps/d/viewer?mid=1vVaezJW-9mFF5b4oteyc-xA69HaNTHM" class="btn" target="_blank">
-                📍 Itinéraire 2: Eaux bleues → Digue Duclos
-            </a>
-            <a href="https://www.google.com/maps/d/viewer?mid=1lDayOhXeVxTh-VxOJkH0bhYP65nFw3U" class="btn" target="_blank">
-                📍 Itinéraire 3: Digue Duclos → Digue St Jean
-            </a>
-            <a href="https://www.google.com/maps/d/viewer?mid=1oVA1hEX2waeiYvpmzox1DCLW_MhcsrQ" class="btn" target="_blank">
-                📍 Itinéraire 4: Annexe 4 - Circuit C
-            </a>
-            <a href="https://www.google.com/maps/d/viewer?mid=1n2Wswd2v5GUN66pp6kQVPsnrphtpfu0" class="btn" target="_blank">
-                📍 Itinéraire 5: Annexe 5 - Circuit D
-            </a>
+            
+            <!-- Boutons de sélection des secteurs -->
+            <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                <button class="btn" style="flex: 1;" onclick="showItineraires('vaulx')">
+                    📍 SE Vaulx-en-Velin
+                </button>
+                <button class="btn" style="flex: 1;" onclick="showItineraires('villeurbanne')">
+                    📍 SE Villeurbanne
+                </button>
+            </div>
+            
+            <!-- Zone d'affichage des itinéraires -->
+            <div id="itinerairesContainer"></div>
         </div>
         
-        <!-- 3. Formulaires -->
+        <!-- 3. Cartes d'inondation -->
         <div class="section">
-            <h2>📋 Formulaires de Visite</h2>
-            <a href="https://docs.google.com/spreadsheets/d/1wV50ZsyoDJhcf5Lja5rl1S9TxsOauadMHmyo9slFQGs/edit?gid=0#gid=0" class="btn btn-secondary" target="_blank">
-                💧 Formulaire "Visite des Eaux Bleues"
-            </a>
-            <a href="https://docs.google.com/spreadsheets/d/1Tsigd9S-qpZfZDQUeLgkA7RIWOTEeDww-NVUIempBMU/edit?gid=0#gid=0" class="btn btn-secondary" target="_blank">
-                🏗️ Formulaire "Visite Digue Duclos"
-            </a>
-            <a href="https://docs.google.com/spreadsheets/d/1kBdOQFZrZ260ah69D6JFvHmQXbumgkTNcgMYXsYQoZs/edit?gid=0#gid=0" class="btn btn-secondary" target="_blank">
-                ⛪ Formulaire "Visite Digue St Jean"
-            </a>
+            <h2>💧 Cartes d'inondation</h2>
+            
+            <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                <button class="btn" style="flex: 1;" onclick="showCartesInondation('vaulx')">
+                    📍 SE Vaulx-en-Velin
+                </button>
+                <button class="btn" style="flex: 1;" onclick="showCartesInondation('villeurbanne')">
+                    📍 SE Villeurbanne
+                </button>
+            </div>
+            
+            <!-- Zone d'affichage des cartes d'inondation -->
+            <div id="cartesInondationContainer"></div>
         </div>
         
         <!-- 4. Déclaration désordre -->
@@ -388,17 +387,6 @@
             
             <a href="https://docs.google.com/document/d/1noVZoJXTRZhPxUgIgMmXy1exlvEX4D_l1iKgFVYniVs/edit?usp=sharing" class="btn btn-warning" target="_blank">
                 📝 Modification de la déclaration d'incidents
-            </a>
-        </div>
-        
-        <!-- 5. Documents -->
-        <div class="section">
-            <h2>📚 Documents & Planning</h2>
-            <a href="https://drive.google.com/drive/folders/1deKB9iZ3gYfjndRiJY3Dyod8UQw3kzTA" class="btn btn-success" target="_blank">
-                📄 Documents d'Astreinte
-            </a>
-            <a href="https://docs.google.com/spreadsheets/d/1DHt0dOl-bFUE5TxNsH33UVqwarC1mSEv/edit?usp=drive_link&ouid=117931034611088760506&rtpof=true&sd=true" target="_blank">
-                📅 Planning d'Astreinte
             </a>
         </div>
     </div>
@@ -820,6 +808,158 @@
             drawChart();
             
             return true;
+        }
+        
+        // Variable globale pour suivre le secteur actuellement affiché
+        var secteurActif = null;
+        
+        // Fonction pour afficher les itinéraires selon le secteur
+        function showItineraires(secteur) {
+            var container = document.getElementById('itinerairesContainer');
+            
+            // Si on clique sur le même secteur, on rétracte la liste
+            if (secteurActif === secteur) {
+                container.style.opacity = '0';
+                setTimeout(function() {
+                    container.innerHTML = '';
+                    container.style.opacity = '1';
+                }, 300);
+                secteurActif = null;
+                return;
+            }
+            
+            // Sinon, on affiche le nouveau secteur
+            secteurActif = secteur;
+            
+            var itineraires = {
+                vaulx: [
+                    { 
+                        nom: "Les eaux bleues", 
+                        url: "https://www.google.com/maps/d/u/2/edit?mid=1xuvjlfYmt7UZRE7ge-LNNPdcJEYxIm4&usp=sharing",
+                        fiche: "https://docs.google.com/spreadsheets/d/12DId6UUQmEeJo35bNyJqwNoKj0v3Gk6O/edit?usp=sharing&ouid=117931034611088760506&rtpof=true&sd=true"
+                    },
+                    { 
+                        nom: "Digue Duclos", 
+                        url: "https://www.google.com/maps/d/u/2/edit?mid=19Q9OWRfZO9Zc9NJInPFjtgtJPzGFfbk&usp=sharing",
+                        fiche: "https://docs.google.com/spreadsheets/d/1Q0aAIMGfpZGkZhjGI4A8SxfvUFbqQ3Nt/edit?usp=sharing&ouid=117931034611088760506&rtpof=true&sd=true"
+                    },
+                    { 
+                        nom: "Digue St Jean", 
+                        url: "https://www.google.com/maps/d/u/2/edit?mid=1Gr9am_UsQsmUgVEceA6UrlQLQcLhc0E&usp=sharing",
+                        fiche: "https://docs.google.com/spreadsheets/d/12r3N5idjDlybhIREzg9BRDzeDDgg19Nd/edit?usp=sharing&ouid=117931034611088760506&rtpof=true&sd=true"
+                    },
+                    { 
+                        nom: "A42 – Circuit C", 
+                        url: "https://www.google.com/maps/d/u/2/edit?mid=1mD_dqfH4oC_-9qsjT1hGWWzekj_4T1Q&usp=sharing",
+                        fiche: "https://drive.google.com/file/d/1_CZ8kFv-VkRghHEZY0FK58O6MI7boNgI/view?usp=sharing"
+                    },
+                    { 
+                        nom: "A42 – Circuit D", 
+                        url: "https://www.google.com/maps/d/u/2/edit?mid=1OjoIxd6LZXW_iMYzVYTb7wRkBMavYzQ&usp=sharing",
+                        fiche: "https://drive.google.com/file/d/1UMjMurwbv7efatiLdLXVLnqZhw5FDrAi/view?usp=sharing"
+                    },
+                    { 
+                        nom: "RN346 – Circuit B", 
+                        url: "https://www.google.com/maps/d/u/2/edit?mid=1o6Zxd64BSOSE07IeDYvy0Gh-whveLc4&usp=sharing",
+                        fiche: "https://drive.google.com/file/d/1Szs6IxsQPF1GVFpTQuB7Ndbi7QXNHXSY/view?usp=sharing"
+                    },
+                    { 
+                        nom: "RN346 – Circuit A", 
+                        url: "https://www.google.com/maps/d/u/2/edit?mid=1eUp178SU_qUIVpgVqzdEy97UzShjaik&usp=sharing",
+                        fiche: "https://drive.google.com/file/d/1klNfp1ywLQO5xfU8Rak4dTYIQewgIZtS/view?usp=sharing"
+                    }
+                ],
+                villeurbanne: [
+                    { 
+                        nom: "Laurent Bonnevay", 
+                        url: "https://www.google.com/maps/d/u/2/edit?mid=1Zxah_iusW28Dr8_OpF6WjlGid1BZ7Qo&usp=sharing",
+                        fiche: "https://drive.google.com/file/d/1ZAB-aq2ei8bjuPq824ARaZvp0yDgG_cx/view?usp=sharing"
+                    }
+                ]
+            };
+            
+            var container = document.getElementById('itinerairesContainer');
+            var liste = itineraires[secteur];
+            var html = '';
+            
+            // Générer les boutons pour chaque parcours avec leur fiche de visite
+            for (var i = 0; i < liste.length; i++) {
+                var parcours = liste[i];
+                // Convertir l'URL d'édition en URL de visualisation pour mobile
+                var urlViewer = parcours.url.replace('/edit?', '/viewer?');
+                
+                // Bouton de l'itinéraire
+                html += '<a href="' + urlViewer + '" class="btn btn-secondary" target="_blank" style="margin-bottom: 5px;">';
+                html += '🗺️ ' + (i + 1) + '. ' + parcours.nom;
+                html += '</a>';
+                
+                // Bouton de la fiche de visite juste en dessous
+                html += '<a href="' + parcours.fiche + '" class="btn btn-success" target="_blank" style="margin-bottom: 20px; font-size: 14px;">';
+                html += '📋 Fiche de visite - ' + parcours.nom;
+                html += '</a>';
+            }
+            
+            // Afficher avec animation
+            container.style.opacity = '0';
+            container.innerHTML = html;
+            setTimeout(function() {
+                container.style.transition = 'opacity 0.3s ease';
+                container.style.opacity = '1';
+            }, 50);
+        }
+        
+        // Variable globale pour suivre le secteur des cartes d'inondation actuellement affiché
+        var secteurCartesActif = null;
+        
+        // Fonction pour afficher les cartes d'inondation selon le secteur
+        function showCartesInondation(secteur) {
+            var container = document.getElementById('cartesInondationContainer');
+            
+            // Si on clique sur le même secteur, on rétracte la liste
+            if (secteurCartesActif === secteur) {
+                container.style.opacity = '0';
+                setTimeout(function() {
+                    container.innerHTML = '';
+                    container.style.opacity = '1';
+                }, 300);
+                secteurCartesActif = null;
+                return;
+            }
+            
+            // Sinon, on affiche le nouveau secteur
+            secteurCartesActif = secteur;
+            
+            var cartes = {
+                vaulx: [
+                    { nom: "Carte 1 - Vaulx-en-Velin", url: "https://drive.google.com/file/d/139aupDKrJroJonY2-P0Apefs0WAuX87n/view?usp=sharing" },
+                    { nom: "Carte 2 - Vaulx-en-Velin", url: "https://drive.google.com/file/d/1yusir_NnZtxbvRH6tBYmkhCY4KaNlno0/view?usp=sharing" },
+                    { nom: "Carte 3 - Vaulx-en-Velin", url: "https://drive.google.com/file/d/11ZjqdhuYC0nwuhMxEWyWmOX49PuTSelc/view?usp=sharing" },
+                    { nom: "Carte 4 - Vaulx-en-Velin", url: "https://drive.google.com/file/d/1cXbRCTHWeMID3k_LS8zpnNBftejYnRlO/view?usp=sharing" }
+                ],
+                villeurbanne: [
+                    { nom: "Carte 1 - Villeurbanne", url: "https://drive.google.com/file/d/1wded4yDG601TTAJqpN0I1ekNENAcEJo2/view?usp=sharing" },
+                    { nom: "Carte 2 - Villeurbanne", url: "https://drive.google.com/file/d/1yBRJCV8_zKyvvMREIm-lveomHlPErH-G/view?usp=sharing" }
+                ]
+            };
+            
+            var liste = cartes[secteur];
+            var html = '';
+            
+            // Générer les boutons pour chaque carte
+            for (var i = 0; i < liste.length; i++) {
+                var carte = liste[i];
+                html += '<a href="' + carte.url + '" class="btn btn-secondary" target="_blank" style="margin-bottom: 10px;">';
+                html += '💧 ' + (i + 1) + '. ' + carte.nom;
+                html += '</a>';
+            }
+            
+            // Afficher avec animation
+            container.style.opacity = '0';
+            container.innerHTML = html;
+            setTimeout(function() {
+                container.style.transition = 'opacity 0.3s ease';
+                container.style.opacity = '1';
+            }, 50);
         }
         
         // Chargement automatique au démarrage
